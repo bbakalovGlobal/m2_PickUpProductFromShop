@@ -2,7 +2,10 @@
 
 namespace Bforward\PickUpProductFromShop\Model;
 
-class ShopList extends \Magento\Framework\Model\AbstractModel implements \Magento\Framework\DataObject\IdentityInterface
+use Bforward\PickUpProductFromShop\Api\Data\ShopListInterface;
+use Magento\Framework\Model\AbstractModel;
+
+class ShopList extends AbstractModel implements \Magento\Framework\DataObject\IdentityInterface, ShopListInterface
 {
 
     const CACHE_TAG = 'bforward_pickupproductfromshop_shoplist';
@@ -24,5 +27,13 @@ class ShopList extends \Magento\Framework\Model\AbstractModel implements \Magent
     public function getDefaultValues()
     {
         return [];
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->getData('name');
     }
 }

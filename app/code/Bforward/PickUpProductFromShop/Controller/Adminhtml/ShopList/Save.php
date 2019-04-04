@@ -2,7 +2,11 @@
 
 namespace Bforward\PickUpProductFromShop\Controller\Adminhtml\ShopList;
 
+use Bforward\PickUpProductFromShop\Api\Data\ShopListInterfaceFactory;
+use Bforward\PickUpProductFromShop\Api\ShopListRepositoryInterface;
 use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Exception\AlreadyExistsException;
 
 class Save extends Action
 {
@@ -11,17 +15,24 @@ class Save extends Action
      * @var \Bforward\PickUpProductFromShop\Model\ShopListFactory
      */
     private $shopListFactory;
+    /**
+     * @var \Bforward\PickUpProductFromShop\Model\ShopListRepository
+     */
+    private $shopListRepository;
 
     /**
-     * @param \Magento\Backend\App\Action\Context                   $context
-     * @param \Bforward\PickUpProductFromShop\Model\ShopListFactory $postFactory
+     * @param Context                     $context
+     * @param ShopListInterfaceFactory    $shopListFactory
+     * @param ShopListRepositoryInterface $shopListRepository
      */
     public function __construct(
-        \Magento\Backend\App\Action\Context $context,
-        \Bforward\PickUpProductFromShop\Model\ShopListFactory $shopListFactory
+        Context $context,
+        ShopListInterfaceFactory $shopListFactory,
+        ShopListRepositoryInterface $shopListRepository
     ) {
         parent::__construct($context);
-        $this->shopListFactory = $shopListFactory;
+        $this->shopListFactory    = $shopListFactory;
+        $this->shopListRepository = $shopListRepository;
     }
 
     /**
@@ -37,8 +48,11 @@ class Save extends Action
             return;
         }
         try {
-            $this->shopListFactory->create()->setData($data)->save();
+            $shopListModel = $this->shopListFactory->create()->setData($data);
+            $this->shopListRepository->save($shopListModel);
             $this->messageManager->addSuccessMessage(__('Row data has been successfully saved.'));
+        } catch (AlreadyExistsException $e) {
+            $this->messageManager->addErrorMessage(__($e->getMessage()));
         } catch (\Exception $e) {
             $this->messageManager->addErrorMessage(__($e->getMessage()));
         }

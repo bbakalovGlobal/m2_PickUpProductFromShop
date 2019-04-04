@@ -2,7 +2,13 @@
 
 namespace Bforward\PickUpProductFromShop\Model;
 
-class ProductShopStock extends \Magento\Framework\Model\AbstractModel implements \Magento\Framework\DataObject\IdentityInterface
+use Bforward\PickUpProductFromShop\Api\Data\ProductShopStockInterface;
+use Bforward\PickUpProductFromShop\Model\ResourceModel\ProductShopStock as ProductShopStockResourceModel;
+use Magento\Framework\DataObject\IdentityInterface;
+use Magento\Framework\Model\AbstractModel;
+
+class ProductShopStock extends AbstractModel
+    implements IdentityInterface, ProductShopStockInterface
 {
 
     const CACHE_TAG = 'bforward_pickupproductfromshop_productshopstock';
@@ -13,7 +19,7 @@ class ProductShopStock extends \Magento\Framework\Model\AbstractModel implements
 
     protected function _construct()
     {
-        $this->_init(\Bforward\PickUpProductFromShop\Model\ResourceModel\ProductShopStock::class);
+        $this->_init(ProductShopStockResourceModel::class);
     }
 
     public function getIdentities()

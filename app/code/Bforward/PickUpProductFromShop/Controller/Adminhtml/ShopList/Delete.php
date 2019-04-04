@@ -2,7 +2,9 @@
 
 namespace Bforward\PickUpProductFromShop\Controller\Adminhtml\ShopList;
 
+use Bforward\PickUpProductFromShop\Api\ShopListRepositoryInterface;
 use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
 
 class Delete extends Action
 {
@@ -16,11 +18,11 @@ class Delete extends Action
      * Delete constructor.
      *
      * @param \Magento\Backend\App\Action\Context                      $context
-     * @param \Bforward\PickUpProductFromShop\Model\ShopListRepository $shopListRepository
+     * @param ShopListRepositoryInterface $shopListRepository
      */
     public function __construct(
-        \Magento\Backend\App\Action\Context $context,
-        \Bforward\PickUpProductFromShop\Model\ShopListRepository $shopListRepository
+        Context $context,
+        ShopListRepositoryInterface $shopListRepository
     ) {
         parent::__construct($context);
         $this->shopListRepository = $shopListRepository;
@@ -38,8 +40,7 @@ class Delete extends Action
             return;
         }
         try {
-            $shop = $this->shopListRepository->getById($id);
-            $shop->delete();
+            $this->shopListRepository->deleteById($id);
             $this->messageManager->addSuccessMessage(__('Row data has been successfully deleted.'));
         } catch (\Exception $e) {
             $this->messageManager->addErrorMessage(__($e->getMessage()));

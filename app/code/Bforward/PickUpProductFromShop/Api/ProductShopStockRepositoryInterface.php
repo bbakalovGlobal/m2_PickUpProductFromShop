@@ -2,42 +2,38 @@
 
 namespace Bforward\PickUpProductFromShop\Api;
 
-use Bforward\PickUpProductFromShop\Api\Data\ShopListInterface;
-use Bforward\PickUpProductFromShop\Model\ShopList;
+use Bforward\PickUpProductFromShop\Api\Data\ProductShopStockInterface;
+use Bforward\PickUpProductFromShop\Model\ProductShopStock;
 
 /**
  * Interface SampleInterface
- *
  * @package Academy\Database\Api\Data
  */
-interface ShopListRepositoryInterface
+interface ProductShopStockRepositoryInterface
 {
-
     /**
-     * @param ShopListInterface $shopList
-     *
+     * @param ProductShopStock $productShopStock
      * @return mixed
      */
-    public function save(ShopListInterface $shopList);
+    public function save(ProductShopStock $productShopStock);
 
     /**
      * @param int $id
-     *
      * @return mixed
      */
     public function getById(int $id);
 
     /**
-     * @return ShopList[]
+     * @return ProductShopStock[]
      */
-    public function getList() : array;
+    public function getList(): array;
 
     /**
-     * @param \Bforward\PickUpProductFromShop\Api\Data\ShopListInterface $shopList
+     * @param ProductShopStockInterface $shopList
      *
      * @return bool true on success
      */
-    public function delete(ShopListInterface $shopList);
+    public function delete(ProductShopStockInterface $shopList);
 
     /**
      *

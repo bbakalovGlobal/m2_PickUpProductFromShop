@@ -2,6 +2,7 @@
 
 namespace Bforward\PickUpProductFromShop\Controller\Adminhtml\ShopList;
 
+use Bforward\PickUpProductFromShop\Api\ShopListRepositoryInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Backend\App\Action\Context;
 use Magento\Ui\Component\MassAction\Filter;
@@ -21,20 +22,27 @@ class MassDelete extends \Magento\Backend\App\Action
      * @var CollectionFactory
      */
     protected $_collectionFactory;
+    /**
+     * @var \Bforward\PickUpProductFromShop\Api\ShopListRepositoryInterface
+     */
+    private $shopListRepository;
 
     /**
-     * @param Context           $context
-     * @param Filter            $filter
-     * @param CollectionFactory $collectionFactory
+     * @param Context                                                         $context
+     * @param Filter                                                          $filter
+     * @param CollectionFactory                                               $collectionFactory
+     * @param \Bforward\PickUpProductFromShop\Api\ShopListRepositoryInterface $shopListRepository
      */
     public function __construct(
         Context $context,
         Filter $filter,
-        CollectionFactory $collectionFactory
+        CollectionFactory $collectionFactory,
+        ShopListRepositoryInterface $shopListRepository
     ) {
 
         $this->_filter            = $filter;
         $this->_collectionFactory = $collectionFactory;
+        $this->shopListRepository = $shopListRepository;
         parent::__construct($context);
     }
 
@@ -44,13 +52,16 @@ class MassDelete extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        $collection    = $this->_filter->getCollection($this->_collectionFactory->create());
-        $recordDeleted = 0;
-        foreach ($collection->getItems() as $record) {
-            $record->delete();
+        $shopListCollection = $this->_filter->getCollection($this->_collectionFactory->create());
+        $recordDeleted      = 0;
+        /**
+         * @var $shop \Bforward\PickUpProductFromShop\Model\ShopList
+         */
+        foreach ($shopListCollection->getItems() as $shop) {
+            $this->shopListRepository->delete($shop);
             $recordDeleted++;
         }
-        $this->messageManager->addSuccess(__('A total of %1 record(s) have been deleted.', $recordDeleted));
+        $this->messageManager->addSuccessMessage(__('A total of %1 record(s) have been deleted.', $recordDeleted));
 
         return $this->resultFactory->create(ResultFactory::TYPE_REDIRECT)->setPath('*/*/index');
     }

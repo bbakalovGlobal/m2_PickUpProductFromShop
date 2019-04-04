@@ -38,7 +38,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
      */
     protected function _prepareForm()
     {
-        $model = $this->_coreRegistry->registry('row_data');
+        $model = $this->_coreRegistry->registry('shop_list_model');
         $form  = $this->_formFactory->create(
             [
                 'data' => [

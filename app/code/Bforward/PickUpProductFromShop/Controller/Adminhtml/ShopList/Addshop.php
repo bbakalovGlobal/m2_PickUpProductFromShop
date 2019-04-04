@@ -2,8 +2,13 @@
 
 namespace Bforward\PickUpProductFromShop\Controller\Adminhtml\ShopList;
 
+use Bforward\PickUpProductFromShop\Api\Data\ShopListInterfaceFactory;
+use Bforward\PickUpProductFromShop\Api\ShopListRepositoryInterface;
+use Bforward\PickUpProductFromShop\Model\ShopList;
 use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Registry;
 
 class Addshop extends Action
 {
@@ -15,21 +20,28 @@ class Addshop extends Action
     /**
      * @var \Bforward\PickUpProductFromShop\Model\ShopListFactory
      */
-    private $gridFactory;
+    private $shopListFactory;
+    /**
+     * @var \Bforward\PickUpProductFromShop\Api\ShopListRepositoryInterface
+     */
+    private $shopListRepository;
 
     /**
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\Registry $coreRegistry,
-     * @param \Bforward\PickUpProductFromShop\Model\ShopListFactory $gridFactory
+     * @param Context                     $context
+     * @param Registry                    $coreRegistry ,
+     * @param ShopListInterfaceFactory    $shopListFactory
+     * @param ShopListRepositoryInterface $shopListRepository
      */
     public function __construct(
-        \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\Registry $coreRegistry,
-        \Bforward\PickUpProductFromShop\Model\ShopListFactory $gridFactory
+        Context $context,
+        Registry $coreRegistry,
+        ShopListInterfaceFactory $shopListFactory,
+        ShopListRepositoryInterface $shopListRepository
     ) {
         parent::__construct($context);
-        $this->coreRegistry = $coreRegistry;
-        $this->gridFactory = $gridFactory;
+        $this->coreRegistry       = $coreRegistry;
+        $this->shopListFactory    = $shopListFactory;
+        $this->shopListRepository = $shopListRepository;
     }
 
     /**
@@ -38,22 +50,24 @@ class Addshop extends Action
      */
     public function execute()
     {
-        $rowId = (int) $this->getRequest()->getParam('id');
-        $rowData = $this->gridFactory->create();
-        /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
-        if ($rowId) {
-            $rowData = $rowData->load($rowId);
-            $rowTitle = $rowData->getName();
-            if (!$rowData->getId()) {
-                $this->messageManager->addError(__('row data no longer exist.'));
-                $this->_redirect('mageplaza_helloworld/post/rowdata');
+        $shopId = (int) $this->getRequest()->getParam('id');
+        $shopListModel = $this->shopListFactory->create();
+
+        if ($shopId) {
+            $shopListModel = $this->shopListRepository->getById($shopId);
+            $shopName = $shopListModel->getName();
+            if (!$shopListModel->getId()) {
+                $this->messageManager->addError(__('Shop no longer exist.'));
+                $this->_redirect('*/*/index');
                 return;
             }
         }
 
-        $this->coreRegistry->register('row_data', $rowData);
+        $this->coreRegistry->register('shop_list_model', $shopListModel);
         $resultPage = $this->resultFactory->create(ResultFactory::TYPE_PAGE);
-        $title = $rowId ? __('Edit Row Data '). $rowTitle : __('Add Row Data');
+        $title = $shopId ? __('Edit Shop ') . $shopName : __('Add New Shop');
+
+        /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage->getConfig()->getTitle()->prepend($title);
         return $resultPage;
     }
