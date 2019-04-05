@@ -16,8 +16,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      */
     protected function _construct()
     {
-//        $this->_init('Bforward\PickUpProductFromShop\Model\ShopList',
-//            'Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList');
         $this->_init(\Bforward\PickUpProductFromShop\Model\ProductShopStock::class,
             \Bforward\PickUpProductFromShop\Model\ResourceModel\ProductShopStock::class);
     }

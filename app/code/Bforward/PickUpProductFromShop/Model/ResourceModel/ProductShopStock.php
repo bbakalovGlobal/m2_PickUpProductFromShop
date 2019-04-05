@@ -2,11 +2,13 @@
 
 namespace Bforward\PickUpProductFromShop\Model\ResourceModel;
 
+use Magento\Framework\Model\ResourceModel\Db\Context;
+
 class ProductShopStock extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
 
     public function __construct(
-        \Magento\Framework\Model\ResourceModel\Db\Context $context
+        Context $context
     ) {
         parent::__construct($context);
     }

@@ -3,7 +3,7 @@
 namespace Bforward\PickUpProductFromShop\Api;
 
 use Bforward\PickUpProductFromShop\Api\Data\ShopListInterface;
-use Bforward\PickUpProductFromShop\Model\ShopList;
+use Magento\Framework\Api\SearchCriteriaInterface;
 
 /**
  * Interface SampleInterface
@@ -14,7 +14,7 @@ interface ShopListRepositoryInterface
 {
 
     /**
-     * @param ShopListInterface $shopList
+     * @param \Bforward\PickUpProductFromShop\Api\Data\ShopListInterface $shopList
      *
      * @return mixed
      */
@@ -28,9 +28,11 @@ interface ShopListRepositoryInterface
     public function getById(int $id);
 
     /**
-     * @return ShopList[]
+     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+     *
+     * @return \Bforward\PickUpProductFromShop\Model\ShopList[]
      */
-    public function getList() : array;
+    public function getList(SearchCriteriaInterface $searchCriteria) : array;
 
     /**
      * @param \Bforward\PickUpProductFromShop\Api\Data\ShopListInterface $shopList

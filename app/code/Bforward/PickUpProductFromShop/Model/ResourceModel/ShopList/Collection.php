@@ -2,7 +2,9 @@
 
 namespace Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList;
 
-class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+
+class Collection extends AbstractCollection
 {
 
     protected $_idFieldName = 'id';
@@ -16,8 +18,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      */
     protected function _construct()
     {
-        $this->_init('Bforward\PickUpProductFromShop\Model\ShopList',
-            'Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList');
+        $this->_init(\Bforward\PickUpProductFromShop\Model\ShopList::class,
+            \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList::class);
     }
 }
 

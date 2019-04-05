@@ -69,6 +69,7 @@ class Addshop extends Action
 
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage->getConfig()->getTitle()->prepend($title);
+
         return $resultPage;
     }
 

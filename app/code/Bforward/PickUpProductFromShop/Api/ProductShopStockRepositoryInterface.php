@@ -12,7 +12,7 @@ use Bforward\PickUpProductFromShop\Model\ProductShopStock;
 interface ProductShopStockRepositoryInterface
 {
     /**
-     * @param ProductShopStock $productShopStock
+     * @param \Bforward\PickUpProductFromShop\Model\ProductShopStock $productShopStock
      * @return mixed
      */
     public function save(ProductShopStock $productShopStock);
@@ -24,14 +24,14 @@ interface ProductShopStockRepositoryInterface
     public function getById(int $id);
 
     /**
-     * @return ProductShopStock[]
+     * @return \Bforward\PickUpProductFromShop\Model\ProductShopStock[]
      */
     public function getList(): array;
 
     /**
-     * @param ProductShopStockInterface $shopList
+     * @param \Bforward\PickUpProductFromShop\Api\Data\ProductShopStockInterface $shopList
      *
-     * @return bool true on success
+     * @return bool
      */
     public function delete(ProductShopStockInterface $shopList);
 
@@ -39,7 +39,7 @@ interface ProductShopStockRepositoryInterface
      *
      * @param $shopId
      *
-     * @return bool true on success
+     * @return bool
      */
     public function deleteById($shopId);
 }
