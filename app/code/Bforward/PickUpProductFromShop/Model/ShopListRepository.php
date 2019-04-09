@@ -6,6 +6,7 @@ namespace Bforward\PickUpProductFromShop\Model;
 use Bforward\PickUpProductFromShop\Api\Data\ShopListInterface;
 use Bforward\PickUpProductFromShop\Api\ShopListRepositoryInterface;
 use Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList;
+use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\ObjectManagerInterface;
 
@@ -34,14 +35,21 @@ class ShopListRepository implements ShopListRepositoryInterface
      */
     private $shopListResource;
 
+    /**
+     * @var \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList\CollectionFactory
+     */
+    private $shopListCollectionFactory;
+
     public function __construct(
         ObjectManagerInterface $objectManager,
         ShopListFactory $shopList,
-        ShopList $shopListResource
+        ShopList $shopListResource,
+        \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList\CollectionFactory $shopListCollectionFactory
     ) {
         $this->objectManager    = $objectManager;
         $this->shopList         = $shopList;
         $this->shopListResource = $shopListResource;
+        $this->shopListCollectionFactory = $shopListCollectionFactory;
     }
 
     /**
@@ -66,11 +74,11 @@ class ShopListRepository implements ShopListRepositoryInterface
     /**
      * @return array
      */
-    public function getList() : array
+    public function getList(SearchCriteriaInterface $searchCriteria) : array
     {
         $list = [];
-        foreach ($this->shopList->get()->getCollection() as $shop) {
-            $list [$shop->getId()] = $shop;
+        foreach ($this->shopListCollectionFactory->create() as $shop) {
+            $list[$shop->getId()] = $shop;
         }
 
         return $list;
