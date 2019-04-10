@@ -2,31 +2,51 @@
 
 namespace Bforward\PickUpProductFromShop\Model\Source;
 
+use Bforward\PickUpProductFromShop\Api\ShopListRepositoryInterface;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 
 class PickupShopList implements \Magento\Framework\Option\ArrayInterface
-
 {
     /**
-     * @var \Bforward\PickUpProductFromShop\Model\ShopListRepository
+     * @var \Magento\Framework\Api\SearchCriteriaBuilder
      */
-    private $pickupShopRepository;
+    private $searchCriteriaBuilder;
+    /**
+     * @var \Bforward\PickUpProductFromShop\Api\ShopListRepositoryInterface
+     */
+    private $shopListRepository;
 
+    /**
+     * PickupShopList constructor.
+     *
+     * @param \Bforward\PickUpProductFromShop\Api\ShopListRepositoryInterface $shopListRepository
+     * @param \Magento\Framework\Api\SearchCriteriaBuilder                    $searchCriteriaBuilder
+     */
     public function __construct(
-        \Bforward\PickUpProductFromShop\Model\ShopListRepository $pickupShopRepository
+        ShopListRepositoryInterface $shopListRepository,
+        SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
-        $this->pickupShopRepository = $pickupShopRepository;
+        $this->shopListRepository = $shopListRepository;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
+    /**
+     * @return array
+     */
     public function toOptionArray()
-
     {
-        $shops = [];
-        foreach ($this->pickupShopRepository->getList() as $shopId => $shop) {
+        $searchCriteria = $this->searchCriteriaBuilder->addFilter(
+            'is_active', true, 'eq'
+        )->create();
+        $shopList       = $this->shopListRepository->getList($searchCriteria);
+        $shops          = [];
+        foreach ($shopList->getItems() as $shop) {
             $shops[] = [
                 'label' => $shop->getName(),
-                'value' => $shopId,
+                'value' => $shop->getId(),
             ];
         }
+
         return $shops;
     }
 }
