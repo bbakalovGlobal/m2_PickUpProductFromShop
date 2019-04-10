@@ -40,15 +40,23 @@ class ShopListRepository implements ShopListRepositoryInterface
      */
     private $shopListCollectionFactory;
 
+    /**
+     * ShopListRepository constructor.
+     *
+     * @param \Magento\Framework\ObjectManagerInterface                                      $objectManager
+     * @param \Bforward\PickUpProductFromShop\Model\ShopListFactory                          $shopList
+     * @param \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList                   $shopListResource
+     * @param \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList\CollectionFactory $shopListCollectionFactory
+     */
     public function __construct(
         ObjectManagerInterface $objectManager,
         ShopListFactory $shopList,
         ShopList $shopListResource,
         \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList\CollectionFactory $shopListCollectionFactory
     ) {
-        $this->objectManager    = $objectManager;
-        $this->shopList         = $shopList;
-        $this->shopListResource = $shopListResource;
+        $this->objectManager             = $objectManager;
+        $this->shopList                  = $shopList;
+        $this->shopListResource          = $shopListResource;
         $this->shopListCollectionFactory = $shopListCollectionFactory;
     }
 
@@ -57,31 +65,26 @@ class ShopListRepository implements ShopListRepositoryInterface
      *
      * @return void
      *
-     * @throws AlreadyExistsException
      * @throws \Exception
      */
     public function save(ShopListInterface $shop)
     {
         try {
             $this->shopListResource->save($shop);
-        } catch (AlreadyExistsException $e) {
-//            throw new AlreadyExistsException(new Phrase('Unique constraint violation found'), $e);
         } catch (\Exception $e) {
 //            throw $e;
         }
     }
 
     /**
-     * @return array
+     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+     *
+     * @return \Bforward\PickUpProductFromShop\Api\Data\ShopListSearchResultInterface
      */
-    public function getList(SearchCriteriaInterface $searchCriteria) : array
+    public function getList(SearchCriteriaInterface $searchCriteria)
     {
-        $list = [];
-        foreach ($this->shopListCollectionFactory->create() as $shop) {
-            $list[$shop->getId()] = $shop;
-        }
-
-        return $list;
+        //TODO: implement search criteria usage
+        return $this->shopListCollectionFactory->create();
     }
 
     /**

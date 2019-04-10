@@ -30,9 +30,9 @@ interface ShopListRepositoryInterface
     /**
      * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
      *
-     * @return \Bforward\PickUpProductFromShop\Model\ShopList[]
+     * @return \Bforward\PickUpProductFromShop\Api\Data\ShopListSearchResultInterface
      */
-    public function getList(SearchCriteriaInterface $searchCriteria) : array;
+    public function getList(SearchCriteriaInterface $searchCriteria);
 
     /**
      * @param \Bforward\PickUpProductFromShop\Api\Data\ShopListInterface $shopList
