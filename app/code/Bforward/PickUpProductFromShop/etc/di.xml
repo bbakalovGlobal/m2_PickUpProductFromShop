@@ -15,7 +15,7 @@
     <preference for="Magento\Sales\Block\Order\Info"
                 type="Bforward\PickUpProductFromShop\Block\Order\Info"/>
     <preference for="Bforward\PickUpProductFromShop\Api\Data\ShopListSearchResultInterface"
-                type="Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList\Collection"/>
+                type="Magento\Framework\Api\SearchResults"/>
     <type name="Magento\Quote\Model\ShippingAssignment">
         <plugin name="carrier-pickupshop-plugin"
                 type="Bforward\PickUpProductFromShop\Plugin\Quote\ShippingAssignmentPlugin" sortOrder="1"

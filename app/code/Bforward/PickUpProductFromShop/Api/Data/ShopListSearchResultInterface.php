@@ -2,11 +2,12 @@
 
 namespace Bforward\PickUpProductFromShop\Api\Data;
 
+use Magento\Framework\Api\SearchResultsInterface;
+
 /**
  * Shop list Interface
  */
-interface ShopListSearchResultInterface
-//    extends \Magento\Framework\Api\SearchResultsInterface
+interface ShopListSearchResultInterface extends SearchResultsInterface
 {
 
     /**

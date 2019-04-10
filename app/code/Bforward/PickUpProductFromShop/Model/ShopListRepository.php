@@ -4,10 +4,12 @@ namespace Bforward\PickUpProductFromShop\Model;
 
 
 use Bforward\PickUpProductFromShop\Api\Data\ShopListInterface;
+use Bforward\PickUpProductFromShop\Api\Data\ShopListSearchResultInterfaceFactory;
 use Bforward\PickUpProductFromShop\Api\ShopListRepositoryInterface;
 use Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList;
+use Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList\CollectionFactory;
+use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
-use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\ObjectManagerInterface;
 
 class ShopListRepository implements ShopListRepositoryInterface
@@ -39,6 +41,14 @@ class ShopListRepository implements ShopListRepositoryInterface
      * @var \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList\CollectionFactory
      */
     private $shopListCollectionFactory;
+    /**
+     * @var \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface
+     */
+    private $collectionProcessor;
+    /**
+     * @var \Bforward\PickUpProductFromShop\Api\Data\ShopListSearchResultInterfaceFactory
+     */
+    private $searchResultInterfaceFactory;
 
     /**
      * ShopListRepository constructor.
@@ -47,17 +57,23 @@ class ShopListRepository implements ShopListRepositoryInterface
      * @param \Bforward\PickUpProductFromShop\Model\ShopListFactory                          $shopList
      * @param \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList                   $shopListResource
      * @param \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList\CollectionFactory $shopListCollectionFactory
+     * @param \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface             $collectionProcessor
+     * @param \Bforward\PickUpProductFromShop\Api\Data\ShopListSearchResultInterfaceFactory  $searchResultInterfaceFactory
      */
     public function __construct(
         ObjectManagerInterface $objectManager,
         ShopListFactory $shopList,
         ShopList $shopListResource,
-        \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList\CollectionFactory $shopListCollectionFactory
+        CollectionFactory $shopListCollectionFactory,
+        CollectionProcessorInterface $collectionProcessor,
+        ShopListSearchResultInterfaceFactory $searchResultInterfaceFactory
     ) {
-        $this->objectManager             = $objectManager;
-        $this->shopList                  = $shopList;
-        $this->shopListResource          = $shopListResource;
-        $this->shopListCollectionFactory = $shopListCollectionFactory;
+        $this->objectManager                = $objectManager;
+        $this->shopList                     = $shopList;
+        $this->shopListResource             = $shopListResource;
+        $this->shopListCollectionFactory    = $shopListCollectionFactory;
+        $this->collectionProcessor          = $collectionProcessor;
+        $this->searchResultInterfaceFactory = $searchResultInterfaceFactory;
     }
 
     /**
@@ -83,8 +99,15 @@ class ShopListRepository implements ShopListRepositoryInterface
      */
     public function getList(SearchCriteriaInterface $searchCriteria)
     {
-        //TODO: implement search criteria usage
-        return $this->shopListCollectionFactory->create();
+        $collection = $this->shopListCollectionFactory->create();
+        $this->collectionProcessor->process($searchCriteria, $collection);
+
+        $searchResults = $this->searchResultInterfaceFactory->create();
+        $searchResults->setSearchCriteria($searchCriteria);
+        $searchResults->setItems($collection->getItems());
+        $searchResults->setTotalCount($collection->getSize());
+
+        return $searchResults;
     }
 
     /**
