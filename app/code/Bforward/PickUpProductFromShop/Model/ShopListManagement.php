@@ -40,7 +40,7 @@ class ShopListManagement implements ShopListManagementInterface
     }
 
     /**
-     * @return array|\Bforward\PickUpProductFromShop\Api\Data\ShopListInterface[]
+     * @return \Bforward\PickUpProductFromShop\Api\Data\ShopListInterface[]
      */
     public function fetchShops()
     {

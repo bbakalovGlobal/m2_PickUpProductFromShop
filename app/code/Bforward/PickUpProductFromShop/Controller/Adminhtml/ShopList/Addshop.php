@@ -4,7 +4,6 @@ namespace Bforward\PickUpProductFromShop\Controller\Adminhtml\ShopList;
 
 use Bforward\PickUpProductFromShop\Api\Data\ShopListInterfaceFactory;
 use Bforward\PickUpProductFromShop\Api\ShopListRepositoryInterface;
-use Bforward\PickUpProductFromShop\Model\ShopList;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\ResultFactory;
@@ -25,12 +24,17 @@ class Addshop extends Action
      * @var \Bforward\PickUpProductFromShop\Api\ShopListRepositoryInterface
      */
     private $shopListRepository;
+    /**
+     * @var \Bforward\PickUpProductFromShop\Api\ProductShopStockRepositoryInterface
+     */
 
     /**
-     * @param Context                     $context
-     * @param Registry                    $coreRegistry ,
-     * @param ShopListInterfaceFactory    $shopListFactory
-     * @param ShopListRepositoryInterface $shopListRepository
+     * Addshop constructor.
+     *
+     * @param \Magento\Backend\App\Action\Context                               $context
+     * @param \Magento\Framework\Registry                                       $coreRegistry
+     * @param \Bforward\PickUpProductFromShop\Api\Data\ShopListInterfaceFactory $shopListFactory
+     * @param \Bforward\PickUpProductFromShop\Api\ShopListRepositoryInterface   $shopListRepository
      */
     public function __construct(
         Context $context,

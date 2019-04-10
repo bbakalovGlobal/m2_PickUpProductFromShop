@@ -3,7 +3,7 @@
 namespace Bforward\PickUpProductFromShop\Api;
 
 use Bforward\PickUpProductFromShop\Api\Data\ProductShopStockInterface;
-use Bforward\PickUpProductFromShop\Model\ProductShopStock;
+use Magento\Framework\Api\SearchCriteriaInterface;
 
 /**
  * Interface SampleInterface
@@ -12,10 +12,11 @@ use Bforward\PickUpProductFromShop\Model\ProductShopStock;
 interface ProductShopStockRepositoryInterface
 {
     /**
-     * @param \Bforward\PickUpProductFromShop\Model\ProductShopStock $productShopStock
+     * @param \Bforward\PickUpProductFromShop\Api\Data\ProductShopStockInterface $productShopStock
+     *
      * @return mixed
      */
-    public function save(ProductShopStock $productShopStock);
+    public function save(ProductShopStockInterface $productShopStock);
 
     /**
      * @param int $id
@@ -24,16 +25,18 @@ interface ProductShopStockRepositoryInterface
     public function getById(int $id);
 
     /**
-     * @return \Bforward\PickUpProductFromShop\Model\ProductShopStock[]
+     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+     *
+     * @return \Bforward\PickUpProductFromShop\Api\Data\ProductShopStockSearchResultInterface
      */
-    public function getList(): array;
+    public function getList(SearchCriteriaInterface $searchCriteria);
 
     /**
-     * @param \Bforward\PickUpProductFromShop\Api\Data\ProductShopStockInterface $shopList
+     * @param \Bforward\PickUpProductFromShop\Api\Data\ProductShopStockInterface $productShopStock
      *
      * @return bool
      */
-    public function delete(ProductShopStockInterface $shopList);
+    public function delete(ProductShopStockInterface $productShopStock);
 
     /**
      *
