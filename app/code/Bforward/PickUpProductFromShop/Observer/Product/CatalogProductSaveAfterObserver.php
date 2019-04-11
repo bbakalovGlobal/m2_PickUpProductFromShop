@@ -62,9 +62,10 @@ class CatalogProductSaveAfterObserver implements ObserverInterface
                         ->create()
                         ->addFieldToFilter('product_id', $productId)
                         ->addFieldToFilter('shop_id', $shopData['shop_id']);
-                    if ($item = $productShopStock->getFirstItem()) {
+                    $shopStockItem = $productShopStock->getFirstItem();
+                    if ($shopStockItem->getData()) {
                         //update product shop stock
-                        $shopStock = $this->productShopStockRepository->getById($item->getId());
+                        $shopStock = $this->productShopStockRepository->getById($shopStockItem->getId());
                         $shopStock->addData(['qty' => $shopData['qty']]);
                     } else {
                         //create new product shop stock
