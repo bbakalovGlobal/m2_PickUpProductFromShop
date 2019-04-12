@@ -58,6 +58,7 @@ class CatalogProductSaveAfterObserver implements ObserverInterface
                 foreach ($pickupShopData as $shopData) {
                     unset($shopData['record_id']);
                     //TODO: it's a little bit hardcode way, need to find best solution and implement it
+                    //TODO: ADD delete all related shops to product, and create new relation based on incoming values
                     $productShopStock = $this->productShopStockCollectionFactory
                         ->create()
                         ->addFieldToFilter('product_id', $productId)

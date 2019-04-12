@@ -20,7 +20,14 @@
                 type="Magento\Framework\Api\SearchResults"/>
     <type name="Magento\Quote\Model\ShippingAssignment">
         <plugin name="carrier-pickupshop-plugin"
-                type="Bforward\PickUpProductFromShop\Plugin\Quote\ShippingAssignmentPlugin" sortOrder="1"
+                type="Bforward\PickUpProductFromShop\Plugin\Quote\ShippingAssignmentPlugin"
+                sortOrder="1"
+                disabled="false"/>
+    </type>
+    <type name="Magento\Catalog\Ui\DataProvider\Product\Form\ProductDataProvider">
+        <plugin name="ui_component_product_data_provider_after_get_data"
+                type="Bforward\PickUpProductFromShop\Plugin\Catalog\Ui\DataProvider\Product\Form\ProductDataProvider"
+                sortOrder="1"
                 disabled="false"/>
     </type>
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">

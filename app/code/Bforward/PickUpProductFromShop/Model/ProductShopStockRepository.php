@@ -102,6 +102,14 @@ class ProductShopStockRepository implements ProductShopStockRepositoryInterface
     }
 
     /**
+     * @return \Bforward\PickUpProductFromShop\Model\ResourceModel\ProductShopStock\Collection
+     */
+    public function getCollection()
+    {
+        return $this->productShopStockCollectionFactory->create();
+    }
+
+    /**
      * @param int $shopId
      *
      * @return \Bforward\PickUpProductFromShop\Model\ProductShopStock
