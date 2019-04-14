@@ -3,7 +3,7 @@
 namespace Bforward\PickUpProductFromShop\Observer\Product;
 
 use Bforward\PickUpProductFromShop\Api\ProductShopStockRepositoryInterface;
-use Bforward\PickUpProductFromShop\Model\ResourceModel\ProductShopStock\CollectionFactory;
+use Bforward\PickUpProductFromShop\Model\ProductShopStockFactory;
 use Magento\Framework\Event\Observer;
 use \Magento\Framework\Event\ObserverInterface;
 
@@ -18,19 +18,13 @@ class CatalogProductSaveAfterObserver implements ObserverInterface
      * @var \Bforward\PickUpProductFromShop\Api\ProductShopStockRepositoryInterface
      */
     private $productShopStockRepository;
-    /**
-     * @var \Bforward\PickUpProductFromShop\Model\ResourceModel\ProductShopStock\CollectionFactory
-     */
-    private $productShopStockCollectionFactory;
 
     public function __construct(
-        \Bforward\PickUpProductFromShop\Model\ProductShopStockFactory $productShopStock,
-        ProductShopStockRepositoryInterface $productShopStockRepository,
-        CollectionFactory $productShopStockCollectionFactory
+        ProductShopStockFactory $productShopStock,
+        ProductShopStockRepositoryInterface $productShopStockRepository
     ) {
-        $this->productShopStock                  = $productShopStock;
-        $this->productShopStockRepository        = $productShopStockRepository;
-        $this->productShopStockCollectionFactory = $productShopStockCollectionFactory;
+        $this->productShopStock           = $productShopStock;
+        $this->productShopStockRepository = $productShopStockRepository;
     }
 
     /**
@@ -52,28 +46,18 @@ class CatalogProductSaveAfterObserver implements ObserverInterface
 
         $productId      = $observer->getProduct()->getId();
         $pickupShopData = $product->getData('pickupshop_product_qty');
-
         try {
+            //Delete all products shop stock
+            $this->productShopStockRepository->deleteByProductId($productId);
             if (\is_array($pickupShopData) && !empty($pickupShopData)) {
                 foreach ($pickupShopData as $shopData) {
-                    unset($shopData['record_id']);
-                    //TODO: it's a little bit hardcode way, need to find best solution and implement it
-                    //TODO: ADD delete all related shops to product, and create new relation based on incoming values
-                    $productShopStock = $this->productShopStockCollectionFactory
-                        ->create()
-                        ->addFieldToFilter('product_id', $productId)
-                        ->addFieldToFilter('shop_id', $shopData['shop_id']);
-                    $shopStockItem = $productShopStock->getFirstItem();
-                    if ($shopStockItem->getData()) {
-                        //update product shop stock
-                        $shopStock = $this->productShopStockRepository->getById($shopStockItem->getId());
-                        $shopStock->addData(['qty' => $shopData['qty']]);
-                    } else {
-                        //create new product shop stock
-                        $shopStock              = $this->productShopStock->create();
-                        $shopData['product_id'] = $productId;
-                        $shopStock->setData($shopData);
-                    }
+                    //TODO: think to preventing same duplicate shops
+                    $shopStock = $this->productShopStock->create();
+                    $shopStock->setData([
+                        'product_id' => $productId,
+                        'qty'        => $shopData['qty'],
+                        'shop_id'    => $shopData['shop_id'],
+                    ]);
                     $this->productShopStockRepository->save($shopStock);
                 }
             }

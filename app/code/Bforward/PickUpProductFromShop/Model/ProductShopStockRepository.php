@@ -10,6 +10,7 @@ use Bforward\PickUpProductFromShop\Api\ProductShopStockRepositoryInterface;
 use Bforward\PickUpProductFromShop\Model\ResourceModel\ProductShopStock;
 use Bforward\PickUpProductFromShop\Model\ResourceModel\ProductShopStock\CollectionFactory;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\ObjectManagerInterface;
 
@@ -41,6 +42,10 @@ class ProductShopStockRepository implements ProductShopStockRepositoryInterface
      * @var \Bforward\PickUpProductFromShop\Model\ResourceModel\ProductShopStock
      */
     private $productShopStockResource;
+    /**
+     * @var \Magento\Framework\Api\SearchCriteriaBuilder
+     */
+    private $searchCriteriaBuilder;
 
     /**
      * ProductShopStockRepository constructor.
@@ -58,7 +63,8 @@ class ProductShopStockRepository implements ProductShopStockRepositoryInterface
         CollectionFactory $collectionFactory,
         CollectionProcessorInterface $collectionProcessor,
         ProductShopStockSearchResultInterfaceFactory $searchResultInterfaceFactory,
-        ProductShopStock $productShopStockResource
+        ProductShopStock $productShopStockResource,
+        SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
         $this->objectManager    = $objectManager;
         $this->productShopStock = $productShopStock;
@@ -66,6 +72,7 @@ class ProductShopStockRepository implements ProductShopStockRepositoryInterface
         $this->collectionProcessor = $collectionProcessor;
         $this->searchResultInterfaceFactory = $searchResultInterfaceFactory;
         $this->productShopStockResource = $productShopStockResource;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
 
@@ -142,5 +149,20 @@ class ProductShopStockRepository implements ProductShopStockRepositoryInterface
     public function deleteById($shopId)
     {
         $this->delete($this->getById($shopId));
+    }
+
+    /**
+     * @param $id
+     *
+     * @throws \Exception
+     */
+    public function deleteByProductId($id)
+    {
+        $searchCriteria = $this->searchCriteriaBuilder->addFilter(
+            'product_id', $id, 'eq'
+        )->create();
+        foreach ($this->getList($searchCriteria)->getItems($searchCriteria) as $item) {
+            $this->delete($item);
+        }
     }
 }
