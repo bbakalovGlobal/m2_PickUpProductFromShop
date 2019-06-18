@@ -1,5 +1,7 @@
 <?php /** @var $block \Magento\Sales\Block\Order\Info */ ?>
-<?php $_order = $block->getOrder() ?>
+<?php $_order = $block->getOrder();
+    echo get_class($block);
+?>
 <div class="block block-order-details-view">
     <div class="block-title">
         <strong><?= /* @escapeNotVerified */ __('Order Information') ?></strong>

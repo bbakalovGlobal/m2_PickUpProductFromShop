@@ -10,6 +10,7 @@ use Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList;
 use Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList\CollectionFactory;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\Api\SortOrder;
 use Magento\Framework\ObjectManagerInterface;
 
 class ShopListRepository implements ShopListRepositoryInterface
@@ -25,9 +26,6 @@ class ShopListRepository implements ShopListRepositoryInterface
      */
     protected $customerSession;
 
-    protected $news;
-
-    protected $objectManager;
     /**
      * @var ShopListFactory
      */
@@ -53,7 +51,6 @@ class ShopListRepository implements ShopListRepositoryInterface
     /**
      * ShopListRepository constructor.
      *
-     * @param \Magento\Framework\ObjectManagerInterface                                      $objectManager
      * @param \Bforward\PickUpProductFromShop\Model\ShopListFactory                          $shopList
      * @param \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList                   $shopListResource
      * @param \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList\CollectionFactory $shopListCollectionFactory
@@ -61,14 +58,12 @@ class ShopListRepository implements ShopListRepositoryInterface
      * @param \Bforward\PickUpProductFromShop\Api\Data\ShopListSearchResultInterfaceFactory  $searchResultInterfaceFactory
      */
     public function __construct(
-        ObjectManagerInterface $objectManager,
         ShopListFactory $shopList,
         ShopList $shopListResource,
         CollectionFactory $shopListCollectionFactory,
         CollectionProcessorInterface $collectionProcessor,
         ShopListSearchResultInterfaceFactory $searchResultInterfaceFactory
     ) {
-        $this->objectManager                = $objectManager;
         $this->shopList                     = $shopList;
         $this->shopListResource             = $shopListResource;
         $this->shopListCollectionFactory    = $shopListCollectionFactory;
@@ -92,23 +87,23 @@ class ShopListRepository implements ShopListRepositoryInterface
         }
     }
 
-    /**
-     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
-     *
-     * @return \Bforward\PickUpProductFromShop\Api\Data\ShopListSearchResultInterface
-     */
-    public function getList(SearchCriteriaInterface $searchCriteria)
-    {
-        $collection = $this->shopListCollectionFactory->create();
-        $this->collectionProcessor->process($searchCriteria, $collection);
-
-        $searchResults = $this->searchResultInterfaceFactory->create();
-        $searchResults->setSearchCriteria($searchCriteria);
-        $searchResults->setItems($collection->getItems());
-        $searchResults->setTotalCount($collection->getSize());
-
-        return $searchResults;
-    }
+//    /**
+//     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+//     *
+//     * @return \Bforward\PickUpProductFromShop\Api\Data\ShopListSearchResultInterface
+//     */
+//    public function getList(SearchCriteriaInterface $searchCriteria)
+//    {
+//        $collection = $this->shopListCollectionFactory->create();
+//        $this->collectionProcessor->process($searchCriteria, $collection);
+//
+//        $searchResults = $this->searchResultInterfaceFactory->create();
+//        $searchResults->setSearchCriteria($searchCriteria);
+//        $searchResults->setItems($collection->getItems());
+//        $searchResults->setTotalCount($collection->getSize());
+//
+//        return $searchResults;
+//    }
 
     /**
      * @param int $shopId
@@ -146,5 +141,63 @@ class ShopListRepository implements ShopListRepositoryInterface
     public function deleteById($shopId)
     {
         $this->delete($this->getById($shopId));
+    }
+
+    public function getList(SearchCriteriaInterface $searchCriteria)
+    {
+        $collection = $this->shopListCollectionFactory->create();
+
+        $this->addFiltersToCollection($searchCriteria, $collection);
+        $this->addSortOrdersToCollection($searchCriteria, $collection);
+        $this->addPagingToCollection($searchCriteria, $collection);
+
+        $collection->load();
+
+        return $this->buildSearchResult($searchCriteria, $collection);
+    }
+
+    private function addFiltersToCollection(
+        SearchCriteriaInterface $searchCriteria,
+        \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList\Collection $collection
+    ) {
+        foreach ($searchCriteria->getFilterGroups() as $filterGroup) {
+            $fields = $conditions = [];
+            foreach ($filterGroup->getFilters() as $filter) {
+                $fields[] = $filter->getField();
+                $conditions[] = [$filter->getConditionType() => $filter->getValue()];
+            }
+            $collection->addFieldToFilter($fields, $conditions);
+        }
+    }
+
+    private function addSortOrdersToCollection(
+        SearchCriteriaInterface $searchCriteria,
+        \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList\Collection $collection
+    ) {
+        foreach ((array)$searchCriteria->getSortOrders() as $sortOrder) {
+            $direction = $sortOrder->getDirection() === SortOrder::SORT_ASC ? 'asc' : 'desc';
+            $collection->addOrder($sortOrder->getField(), $direction);
+        }
+    }
+
+    private function addPagingToCollection(
+        SearchCriteriaInterface $searchCriteria,
+        \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList\Collection $collection
+    ) {
+        $collection->setPageSize($searchCriteria->getPageSize());
+        $collection->setCurPage($searchCriteria->getCurrentPage());
+    }
+
+    private function buildSearchResult(
+        SearchCriteriaInterface $searchCriteria,
+        \Bforward\PickUpProductFromShop\Model\ResourceModel\ShopList\Collection $collection
+    ) {
+        $searchResults = $this->searchResultInterfaceFactory->create();
+
+        $searchResults->setSearchCriteria($searchCriteria);
+        $searchResults->setItems($collection->getItems());
+        $searchResults->setTotalCount($collection->getSize());
+
+        return $searchResults;
     }
 }
